@@ -266,3 +266,5 @@ print(n - max(d))  # 열외된 병사 수 구하기
 
 
 
+문제 참고 : https://www.youtube.com/watch?v=5Lu34WIx2Us
+
