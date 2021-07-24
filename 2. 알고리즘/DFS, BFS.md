@@ -58,19 +58,19 @@ def gcd(a, b):
 
 - 시작 노드를 스택에 넣고 방문 처리한다.
 
-![image-20210724224855704](알고리즘.assets/image-20210724224855704.png)
+![image-20210724224855704](알고리즘.assets/image-704.png)
 
 
 
 - 1과 연결된 노드 중 방문하지 않은 인접 노드를 하나 정해 스택에 넣고 방문 처리한다. 
 
-![image-20210724225033450](알고리즘.assets/image-20210724225033450.png)
+![image-20210724225033450](알고리즘.assets/image-450.png)
 
 
 
 - 과정을 반복하다 더 이상 갈 곳이 없다면 스택에서 값을 꺼낸다.
 
-![image-20210724225154575](알고리즘.assets/image-20210724225154575.png)
+![image-20210724225154575](알고리즘.assets/image-575.png)
 
 
 
@@ -127,25 +127,25 @@ dfs(graph, 1, visited)
 
 - 시작 노드를 큐에 넣고 방문 처리한다.
 
-![image-20210724224855704](알고리즘.assets/image-20210724224855704.png)
+![image-20210724224855704](알고리즘.assets/image-704.png)
 
 
 
 - 큐에서 시작 노드를 꺼내고 방문하지 않은 인접 노드를 큐에 전부 넣어준다.
 
-![image-20210724225636846](알고리즘.assets/image-20210724225636846.png)
+![image-20210724225636846](알고리즘.assets/image-846.png)
 
 
 
 - 큐에서 제일 아래 값을 꺼내 방문하지 않은 인접 노드를 큐에 삽입하고 방문 처리한다. 
 
-![image-20210724230014864](알고리즘.assets/image-20210724230014864.png)
+![image-20210724230014864](알고리즘.assets/image-864.png)
 
 
 
 - 큐에서 순서대로 꺼내며 방문하지 않은 인접 노드가 없다면 꺼내기만 하고 큐의 다음 노드로 넘어간다. 
 
-![image-20210724230208281](알고리즘.assets/image-20210724230208281.png)
+![image-20210724230208281](알고리즘.assets/image-281.png)\
 
 
 
@@ -191,3 +191,112 @@ bfs(graph, 1, visited)
 
 <br>
 
+<br>
+
+**음료수 얼려 먹기(dfs)**
+
+- 칸막이는 1 구멍은 0일 때 N*M 얼음 틀 모양에서 만들 수 있는 총 아이스크림의 개수를 구하는 프로그램(구멍이 붙어있는 경우 연결되어 있는 것임)
+
+```python
+"""
+4 5
+00110
+00011
+11111
+00000
+
+아이스크림 3개
+"""
+
+def dfs(x, y):
+    # 범위 벗어나면 종료
+    if x <= -1 or x >= N or y <= -1 or y >= M:
+        return False
+    # 방문하지 않았다면, 즉 구멍칸 0이라면
+    if graph[x][y] == 0:
+        # 방문처리
+        graph[x][y] = 1
+        # 상하좌우 위치를 재귀 호출
+        dfs(x-1, y)
+        dfs(x, y-1)
+        dfs(x+1, y)
+        dfs(x, y+1)
+        return True
+    # 구멍칸 외에는 false
+    return False
+
+
+N, M = map(int, input().split())
+graph = []
+for i in range(N):
+    graph.append(list(map(int, input())))
+
+result = 0
+for i in range(N):
+    for j in range(M):
+        # dfs 탐색을 하며 한 구역의 구멍칸을 다 돌았다면 True
+        if dfs(i, j) == True:
+            # True의 갯수 구하기
+            result += 1
+
+print(result)
+```
+
+<br>
+
+**미로 탈출(bfs)**
+
+- N*M 크기의 직사각형 미로에서 (1,1)이 현재 위치, 출구는 (N, M)에 위치하며  한 칸씩 이동할 수 있다. 괴물이 있는 부분은 0, 없는 부분은 1일때 탈출하기 위한 최소한의 칸을 구하는 프로그램(시작 칸과 마지막 칸도 계산에 포함한다.)
+
+```python
+"""
+5 6
+101010
+111111
+000001
+111111
+111111
+"""
+from collections import deque
+
+def bfs(x, y):
+    queue = deque()
+    # 초기 값을 큐에 넣기
+    queue.append((x, y))
+    # 큐가 빌 때까지 반복
+    while queue:
+        x, y = queue.popleft()
+        # 갈 수 있는 4가지 방향 탐색
+        for i in range(4):
+            nx = x + dx[i]
+            ny = y + dy[i]
+            # miro를 벗어난다면 패스
+            if nx < 0 or nx >= N or ny < 0 or ny >= M:
+                continue
+            # 벽이어도 패스
+            if miro[nx][ny] == 0:
+                continue
+            # 해당 노드를 처음 방문하는 경우에 
+            if miro[nx][ny] == 1:
+                # 거리를 1칸 이동시킨 값을 넣어 갱신하고
+                miro[nx][ny] = miro[x][y] + 1
+                # 현재 위치를 이동
+                queue.append((nx, ny))
+    # 도착한 위치의 값이 거리값
+    return miro[N-1][M-1]
+
+N, M = map(int, input().split())
+miro = [list(map(int, input())) for _ in range(N)]
+
+# 이동할 수 있는 4가지 방향
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+
+print(bfs(0, 0))
+```
+
+
+
+
+
+문제 참고 : https://www.youtube.com/watch?v=7C9RgOcvkvo
